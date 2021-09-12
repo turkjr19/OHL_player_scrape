@@ -12,7 +12,7 @@ season_id <- 69
 id <- c(1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,34)
 ohl_teams <- data.frame(id)
 
-# create an empty place to add each game data
+# create an empty place to add each player bio data
 output <- NULL
 
 # iterative process to read each team id from ohl_teams data frame and then run code
@@ -25,17 +25,19 @@ for (i in 1:nrow(ohl_teams)) {
   str3 <- "&fmt=json"
   url <- paste0(str1,season_id,str2,team_ID,str3)
   
-  # Import gameID data from JSON
+  # Import roster data from JSON
   # use jsonlite::fromJSON to handle NULL values
   json_data <- jsonlite::fromJSON(url, simplifyDataFrame = TRUE)
   
   # create a tibble of only the number of players to loop through
-  # the last list item is the coaches/managers so we need to remove that
+  # the last list item is the coaches/managers so we need to remove that with code below
   list <- json_data[["SiteKit"]][["Roster"]]
   list <- head(list,-1)
  
   for (i in list){
-    
+    # had to create a tibble and pull from each list item because some players
+    # had a draftteam list that was empty and it would not allow me to just create a tibble
+    # right off the start
     player_bios <- tibble(
       player_id = as.numeric((i)[["player_id"]]),
       full_name = (i)[["name"]],
